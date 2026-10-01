@@ -1,8 +1,10 @@
 // Create a Morse code coder-decoder program.
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #define CSIZE 10
 
+// My dictionary structure. Morse is a array of pointers, which lets me store strings in each element.
 typedef struct Dictionary
 {
 
@@ -13,24 +15,57 @@ typedef struct Dictionary
 
 } dict;
 
+// Code from symbol to morse code function;
 void code(char encrypt[], dict dictionary)
 {
 
+    // Check for NULL case.
     if (encrypt == NULL)
     {
         printf("Error: No input was given, please try again.");
         return;
     }
 
+    // Run through the user input, comparing symbols with morse code.
     for (size_t i = 0; i < strlen(encrypt); ++i)
     {
-        for(size_t j = 0; j < strlen(dictionary.symbol); ++j){
-            strcmp(encrypt[i], dictionary.symbol[j]);
-            if(strcmp(encrypt[i], dictionary.symbol[j]) == 0){
-                
+        // Make every letter lowercase so if user enters uppercase, it gets solved.
+        encrypt[i] = tolower(encrypt[i]);
+
+        for (size_t j = 0; j < dictionary.size; ++j)
+        {
+            if (encrypt[i] == dictionary.symbol[j])
+            {
+                printf("%s ", dictionary.morse[j]);
+                break;
             }
         }
-        
+    }
+}
+
+// Decode, go from morse to symbols.
+void decode(char decrypt[], dict dictionary)
+{
+
+    // Check for NULL case.
+    if (decrypt == NULL)
+    {
+        printf("Error: No input was given, please try again.");
+        return;
+    }
+
+    // Run through the user input, comparing symbols with morse code.
+    for (size_t i = 0; i < strlen(decrypt); ++i)
+    {
+
+        for (size_t j = 0; j < dictionary.size; ++j)
+        {
+            if (decrypt[i] == dictionary.morse[j])
+            {
+                printf("%c", dictionary.symbol[j]);
+                break;
+            }
+        }
     }
 }
 
@@ -88,12 +123,12 @@ int main(void)
     fgets(user_command, sizeof(user_command), stdin);
 
     // Because fgets() saves \n, find it and change it to \0.
-    user_command[strcspn(user_command, "\n")] = "\0";
+    user_command[strcspn(user_command, "\n")] = '\0';
 
-    // Compare commands given:
+    // Compare commands given
 
     // Command: Help:
-    if (strcmp(user_command, "help") || strcmp(user_command, "Help"))
+    if (strcmp(user_command, "help") == 0 || strcmp(user_command, "Help") == 0)
     {
         printf("COMMAND LIST:\n");
         printf("-------------------------------------------------------\n");
@@ -105,13 +140,17 @@ int main(void)
         printf("exit - exit the program\n");
         printf("-------------------------------------------------------\n");
     }
-
     // Command: Code
-    if (strcmp(user_command, "code") || strcmp(user_command, "Code"))
+    else if (strcmp(user_command, "code") == 0 || strcmp(user_command, "Code") == 0)
     {
         printf("Enter what you want to code (You can only code letters and numbers):\n");
         fgets(user_input, sizeof(user_input), stdin);
         code(user_input, dictionary);
+    }
+    else if (strcmp(user_command, "decode") == 0 || strcmp(user_command, "Decode") == 0)
+    {
+        printf("Enter the morse code you want to decode (You can only decode letters and numbers):\n");
+        fgets(user_input, sizeof(user_input), stdin);
     }
 
     return 0;
