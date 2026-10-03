@@ -1,10 +1,11 @@
-// Create a Morse code coder-decoder program.
+// Create a morse code coder-decoder program.
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#define CSIZE 10
+#define CSIZE 10 // Command size
+#define ISIZE 1000 // Input size
 
-// My dictionary structure. Morse is a array of pointers, which lets me store strings in each element.
+// My dictionary structure. Morse is an array of pointers, which lets me store strings in each element.
 typedef struct Dictionary
 {
 
@@ -19,7 +20,7 @@ typedef struct Dictionary
 void code(char encrypt[], dict dictionary)
 {
 
-    // Check for NULL case.
+    // Check if input is NULL.
     if (encrypt == NULL)
     {
         printf("Error: No input was given, please try again.");
@@ -43,24 +44,66 @@ void code(char encrypt[], dict dictionary)
     }
 }
 
+
 // Decode, go from morse to symbols.
 void decode(char decrypt[], dict dictionary)
 {
 
-    // Check for NULL case.
+
+    // Check if input is NULL.
     if (decrypt == NULL)
     {
         printf("Error: No input was given, please try again.");
         return;
     }
 
-    // Run through the user input, comparing symbols with morse code.
+
+    // Create a temporary array to store one morse code at a time.
+    // needed, because otherwise i cant compare with dictionary.morse[]
+    char morse[10];
+
+
+    // Keeps track of next pos in morse[] array.
+    size_t k = 0;
+
+
+    // Run through the user input:
     for (size_t i = 0; i < strlen(decrypt); ++i)
     {
-
-        for (size_t j = 0; j < dictionary.size; ++j)
+        // IF no space is found, save the morse code in the morse[] array
+        if (decrypt[i] != ' ')
         {
-            if (decrypt[i] == dictionary.morse[j])
+            morse[k] = decrypt[i];
+            ++k;
+        }
+        
+
+        //IF decrypt[i] == ' ' a space, set the last element to \0, 
+        // then search for the matching morse code in the dictionary.
+        else
+        {
+
+            morse[k] = '\0';
+            k = 0;
+            for (int j = 0; j < dictionary.size; ++j)
+            {
+                if (strcmp(morse, dictionary.morse[j]) == 0)
+                {
+                    printf("%c", dictionary.symbol[j]);
+                    break;
+                }
+            }
+        }
+    }
+
+
+    // Decode the last morse code, because last code doesnt end in space, it is handled seperatly.
+    if (k > 0)
+    {
+        morse[k] = '\0';
+        for (int j = 0; j < dictionary.size; ++j)
+        {
+            if (strcmp(morse, dictionary.morse[j]) == 0)
             {
                 printf("%c", dictionary.symbol[j]);
                 break;
@@ -86,7 +129,7 @@ int main(void)
 
     // Store user input.
     char user_command[CSIZE] = "";
-    char user_input[1000] = "";
+    char user_input[ISIZE] = "";
 
     // Loop to fill up the array from a-z then 0-9 in that order.
     for (int i = 0; i < 36; i++)
@@ -119,7 +162,7 @@ int main(void)
     printf("-------------------------------------------------------\n");
 
     // Let user input one of the commands:
-    printf("Input a valid cogmmand:\n");
+    printf("Input a valid command:\n");
     fgets(user_command, sizeof(user_command), stdin);
 
     // Because fgets() saves \n, find it and change it to \0.
@@ -145,12 +188,16 @@ int main(void)
     {
         printf("Enter what you want to code (You can only code letters and numbers):\n");
         fgets(user_input, sizeof(user_input), stdin);
+
+        user_input[strcspn(user_input, "\n")] = '\0'; // This changes the newline that gets inputted from fgets() to a terminator
         code(user_input, dictionary);
     }
     else if (strcmp(user_command, "decode") == 0 || strcmp(user_command, "Decode") == 0)
     {
         printf("Enter the morse code you want to decode (You can only decode letters and numbers):\n");
         fgets(user_input, sizeof(user_input), stdin);
+        user_input[strcspn(user_input, "\n")] = '\0';
+        decode(user_input, dictionary);
     }
 
     return 0;
