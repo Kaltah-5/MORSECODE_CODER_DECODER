@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#define CSIZE 10   // Command size
-#define ISIZE 1000 // Input size
+#define CSIZE 10   // Command size.
+#define ISIZE 1000 // Input size.
+#define SSIZE 3    // Single char size.
 
 // My dictionary structure. Morse is an array of pointers, which lets me store strings in each element.
 typedef struct Dictionary
@@ -29,9 +30,11 @@ void code(char encrypt[], dict dictionary)
     // Check if input is NULL.
     if (encrypt == NULL)
     {
-        printf("Error: No input was given, please try again.\n");
+        printf("ERROR: No input was given, please try again.\n");
         return;
     }
+
+    printf("The morse code representation of \"%s\" is: \n", encrypt);
 
     // Run through the user input, comparing symbols with morse code.
     for (size_t i = 0; i < strlen(encrypt); ++i)
@@ -39,10 +42,10 @@ void code(char encrypt[], dict dictionary)
         // Make every letter lowercase so if user enters uppercase, it gets solved.
         encrypt[i] = tolower(encrypt[i]);
 
-        printf("The ")
         for (size_t j = 0; j < dictionary.size; ++j)
         {
-            if(encrypt[i] == ' '){
+            if (encrypt[i] == ' ')
+            {
                 printf(" ");
                 break;
             }
@@ -51,9 +54,7 @@ void code(char encrypt[], dict dictionary)
                 printf("%s ", dictionary.morse[j]);
                 break;
             }
-
         }
-        
     }
     printf("\n");
 }
@@ -65,7 +66,7 @@ void decode(char decrypt[], dict dictionary)
     // Check if input is NULL.
     if (decrypt == NULL)
     {
-        printf("Error: No input was given, please try again.\n");
+        printf("ERROR: No input was given, please try again.\n");
         return;
     }
 
@@ -128,7 +129,7 @@ void search(char search, dict dictionary)
     // Check if input is NULL.
     if (search == '\0')
     {
-        printf("Error: No input was given, please try again.\n");
+        printf("ERROR: No input was given, please try again.\n");
         return;
     }
 
@@ -143,11 +144,45 @@ void search(char search, dict dictionary)
     }
 }
 
+int exit_program(char user_char[])
+{
+    if (user_char[0] == '\0')
+    {
+        printf("ERROR: No input was given, please try again.\n");
+        return 0;
+    }
+
+    while (1)
+    {
+        if (strcmp(user_char, "y") == 0 || strcmp(user_char, "Y") == 0)
+        {
+            printf("Goodbye!");
+            return 1;
+        }
+        else if (strcmp(user_char, "n") == 0 || strcmp(user_char, "N") == 0)
+        {
+            printf("Program will keep running!\n");
+            return 0;
+
+            // Keep the program running, go back to the beginning of the while loop.
+        }
+        else
+        {
+
+            printf("ERROR: Please enter Y or N \n");
+            fgets(user_char, SSIZE, stdin);
+            user_char[strcspn(user_char, "\n")] = '\0';
+        }
+    }
+}
+
 int main(void)
 {
     // Initilize the morsecode from a-z then 0-9 in that order.
     dict dictionary = {
+        .dictionary_id = 1,
         .size = 36,
+
         // Array of pointers:
         .morse = {
             ".-", "-...", "-.-.", "-..", ".",
@@ -162,8 +197,8 @@ int main(void)
     // Store user input.
     char user_command[CSIZE] = "";
     char user_input[ISIZE] = "";
-    char user_input_symbol[2] = "";
-    char user_decision[2] = "";
+    char user_input_symbol[SSIZE] = "";
+    char user_decision[SSIZE] = "";
 
     // Loop to fill up the array from a-z then 0-9 in that order.
     for (int i = 0; i < 36; i++)
@@ -199,7 +234,7 @@ int main(void)
     {
         // Let user input one of the commands:
         printf("Input a valid command:\n");
-        fgets(user_command, sizeof(user_command), stdin);
+        fgets(user_command, CSIZE, stdin);
 
         // Because fgets() saves \n, find it and change it to \0.
         user_command[strcspn(user_command, "\n")] = '\0';
@@ -222,7 +257,7 @@ int main(void)
         else if (strcmp(user_command, "code") == 0 || strcmp(user_command, "Code") == 0)
         {
             printf("Enter what you want to code (You can only code letters and numbers):\n");
-            fgets(user_input, sizeof(user_input), stdin);
+            fgets(user_input, ISIZE, stdin);
 
             user_input[strcspn(user_input, "\n")] = '\0'; // This changes the newline that gets inputted from fgets() to \0.
             code(user_input, dictionary);
@@ -234,7 +269,7 @@ int main(void)
         else if (strcmp(user_command, "decode") == 0 || strcmp(user_command, "Decode") == 0)
         {
             printf("Enter the morse code you want to decode (You can only decode letters and numbers):\n");
-            fgets(user_input, sizeof(user_input), stdin);
+            fgets(user_input, ISIZE, stdin);
 
             user_input[strcspn(user_input, "\n")] = '\0';
             decode(user_input, dictionary);
@@ -248,32 +283,21 @@ int main(void)
 
         //     search(user_input_symbol, dictionary);
         // }
-        
-
 
         // Command: Exit.
-        if (strcmp(user_command, "exit") == 0 || strcmp(user_command, "Exit") == 0)
+
+        else if (strcmp(user_command, "exit") == 0 || strcmp(user_command, "Exit") == 0)
         {
-
             printf("Are you sure you want to exit? [Y/N]\n");
-            scanf("%c", user_decision);
+            fgets(user_decision, SSIZE, stdin);
+            user_decision[strcspn(user_decision, "\n")] = '\0';
 
-            if (user_decision == 'y' || user_decision == 'Y')
+            if (exit_program(user_decision) == 1)
             {
-                printf("Goodbye!");
                 break;
-            }
-            else if (user_decision == 'n' || user_decision == 'N')
-            {
-                printf("Program will keep running!\n");
-            }
-            else
-            {
-                printf("Are you sure you want to exit? [Y/N]\n");
-                scanf("%c", user_decision);
-
             }
         }
     }
+
     return 0;
 }
