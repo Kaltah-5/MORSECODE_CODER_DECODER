@@ -1,164 +1,10 @@
 // Create a morse code coder-decoder program.
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
+#include "morse.h"
 #define CSIZE 10   // Command size.
 #define ISIZE 1000 // Input size.
 #define SSIZE 3    // Single char size.
-
-// My dictionary structure. Morse is an array of pointers, which lets me store strings in each element.
-typedef struct Dictionary
-{
-
-    int dictionary_id;
-    int size;
-    char symbol[36];
-    const char *morse[36];
-
-} dict;
-
-struct coder_decoder
-{
-    dict Dictionary;
-    int current_dictionary_id;
-};
-
-// Code function: code letters and numbers to their morse codes representation.
-void code(char encrypt[], dict dictionary)
-{
-
-    // Check if input is NULL.
-    if (encrypt == NULL)
-    {
-        printf("ERROR: No input was given, please try again.\n");
-        return;
-    }
-
-    printf("The morse code representation of \"%s\" is: \n", encrypt);
-
-    // Run through the user input, comparing symbols with morse code.
-    for (size_t i = 0; i < strlen(encrypt); ++i)
-    {
-        // Make every letter lowercase so if user enters uppercase.
-        encrypt[i] = tolower(encrypt[i]);
-
-        for (size_t j = 0; j < dictionary.size; ++j)
-        {
-            // If statement to help seperate words, if input contains more than 1 word.
-            if (encrypt[i] == ' ')
-            {
-                printf(" ");
-                break;
-            }
-
-            // Print the morse code representation of each symbol.
-            else if (encrypt[i] == dictionary.symbol[j])
-            {
-                printf("%s ", dictionary.morse[j]);
-                break;
-            }
-        }
-    }
-    printf("\n");
-}
-
-// Decode function: Decode morse code to letters and numbers.
-void decode(char decrypt[], dict dictionary)
-{
-
-    // Check if input is NULL.
-    if (decrypt == NULL)
-    {
-        printf("ERROR: No input was given, please try again.\n");
-        return;
-    }
-
-    // Create a temporary array to store one morse code at a time.
-    // needed, because otherwise user input cant be compared with dictionary.morse[].
-    // User input array of char
-    // dictionary.morse is an array of pointers
-    char morse[10];
-
-    // Keeps track of next pos in morse[] array.
-    size_t k = 0;
-
-    // Run through the user input:
-    for (size_t i = 0; i < strlen(decrypt); ++i)
-    {
-        // IF no space is found, save the morse code in the morse[] array
-        if (decrypt[i] != ' ')
-        {
-            morse[k] = decrypt[i];
-            ++k;
-        }
-
-        // IF decrypt[i] == ' ' a space, set the last element in morse [] to \0,
-        //  Reset k counter,
-        //  then search for the matching morse code in the dictionary.
-        else
-        {
-            
-            morse[k] = '\0';
-            k = 0;
-            for (size_t j = 0; j < dictionary.size; ++j)
-            {
-                if(morse == " "){
-                    printf(" ");
-                }
-                else if (strcmp(morse, dictionary.morse[j]) == 0)
-                {
-                    printf("%c", dictionary.symbol[j]);
-                    break;
-                }
-            }
-        }
-    }
-
-    // Decode the last morse code, because last code doesnt end in space, it is handled separatly.
-    if (k > 0)
-    {
-        morse[k] = '\0';
-        for (size_t j = 0; j < dictionary.size; ++j)
-        {
-            if (strcmp(morse, dictionary.morse[j]) == 0)
-            {
-                printf("%c \n", dictionary.symbol[j]);
-                break;
-            }
-        }
-    }
-}
-
-// Search function: Find the morse code representation of a singel letter or number
-void search(char find[], dict dictionary)
-{
-
-    // Check if input is NULL.
-    if (find == NULL)
-    {
-        printf("ERROR: No input was given, please try again.\n");
-        return;
-    }
-
-    for (size_t i = 0; i < dictionary.size; ++i)
-    {
-        find[0] = tolower(find[0]);
-        // If the first element is found, print the morse code representation.
-        if (find[0] == dictionary.symbol[i])
-        {
-            printf("The Morse code representation of %c is: %s\n", find[0], dictionary.morse[i]);
-            break;
-        }
-        else
-        {
-            printf("ERROR: Please enter a valid symbol (Letters or numbers).\n");
-            fgets(find, SSIZE, stdin);
-            find[strcspn(find, "\n")] = '\0';
-            break;
-            search(find, dictionary);
-        }
-    }
-}
 
 int exit_program(char user_char[])
 {
@@ -312,6 +158,12 @@ int main(void)
             {
                 break;
             }
+        }
+
+        // Command: Show.
+        else if (strcmp(user_command, "show") == 0 || strcmp(user_command, "Show") == 0)
+        {
+            show(dictionary);
         }
     }
 
