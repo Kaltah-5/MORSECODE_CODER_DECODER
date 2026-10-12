@@ -140,6 +140,8 @@ int main(void)
             {
                 user_input[strcspn(user_input, "\n")] = '\0';
                 search(user_input, dictionary);
+                printf("=======================================================\n");
+                printf("\n\n");
             }
         }
 
@@ -168,6 +170,8 @@ int main(void)
         else if (strcmp(user_command, "show") == 0 || strcmp(user_command, "Show") == 0)
         {
             show(dictionary);
+            printf("=======================================================\n");
+            printf("\n\n");
         }
         else
         {

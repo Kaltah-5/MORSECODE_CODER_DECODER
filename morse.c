@@ -373,7 +373,7 @@ int exit_program(char user_char[])
 
     while (1)
     {
-        printf("=========================================\n");
+
 
         if (user_char == NULL || user_char[0] == '\0')
         {
