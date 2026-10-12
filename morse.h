@@ -27,6 +27,7 @@ void decode(char decrypt[], dict dictionary);
 void search(char find[], dict dictionary);
 void show(dict dictionary);
 int exit_program(char user_char[]);
+int input_checker(char input[], int size);
 
 #endif
 

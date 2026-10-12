@@ -7,6 +7,35 @@
 #define CSIZE 10   // Command size.
 #define ISIZE 1000 // Input size.
 
+// Handle long user inputs
+int input_checker(char input[], int size)
+{
+
+    if (strchr(input, '\n') == NULL)
+    {
+        int ch;
+
+        while ((ch = getchar()) != '\n' && ch != EOF)
+        {
+            // This will 'eat' the letters until it reaches \n.
+        }
+        if (size == ISIZE)
+        {
+            printf("ERROR: Your input is too long, maximum length is 999 characters.\n");
+            return 0;
+        }
+        else if (size == CSIZE)
+        {
+            printf("ERROR: Your input is too long, maximum length is 9 characters.\n");
+            return 0;
+        }
+    }
+    else
+    {
+        return 1;
+    }
+}
+
 // Code function: code letters and numbers to their morse codes representation.
 void code(char encrypt[], dict dictionary)
 {
@@ -90,7 +119,14 @@ void code(char encrypt[], dict dictionary)
         // If the if statement above is skipped, we ask the user to write something again.
         printf("\nEnter what you want to code (You can only code letters and numbers):\n");
         fgets(encrypt, ISIZE, stdin);
-        encrypt[strcspn(encrypt, "\n")] = '\0';
+        if (input_checker(encrypt, ISIZE) == 0)
+        {
+            continue;
+        }
+        else
+        {
+            encrypt[strcspn(encrypt, "\n")] = '\0';
+        }
     }
 }
 
@@ -124,7 +160,8 @@ void decode(char decrypt[], dict dictionary)
             }
 
             // A check so that input doesnt end with space.
-            if(strlen(decrypt) > 0 && decrypt[strlen(decrypt) - 1] == ' '){
+            if (strlen(decrypt) > 0 && decrypt[strlen(decrypt) - 1] == ' ')
+            {
                 printf("ERROR: Morse code can't end with a space!");
                 valid = 0;
             }
@@ -164,7 +201,7 @@ void decode(char decrypt[], dict dictionary)
 
                         if (k > 0)
                         {
-                            // Set last element to \0.
+                            // Set last element to \0
                             morse[k] = '\0';
 
                             for (size_t j = 0; j < dictionary.size; ++j)
@@ -223,16 +260,26 @@ void decode(char decrypt[], dict dictionary)
                 }
             }
 
+            // Exit this function when valid at the end.
             if (valid)
             {
                 printf("\n");
                 return;
             }
         }
+
         // Request new input when an error is found.
         printf("\nEnter the morse code you to decode (You can only code letters and numbers):\n");
+
         fgets(decrypt, ISIZE, stdin);
-        decrypt[strcspn(decrypt, "\n")] = '\0';
+        if (input_checker(decrypt, ISIZE) == 0)
+        {
+            continue;
+        }
+        else
+        {
+            decrypt[strcspn(decrypt, "\n")] = '\0';
+        }
     }
 }
 
@@ -240,29 +287,70 @@ void decode(char decrypt[], dict dictionary)
 void search(char find[], dict dictionary)
 {
 
-    // Check if input is NULL.
-    if (find == NULL)
+    while (1)
     {
-        printf("ERROR: No input was given, please try again.\n");
-        return;
-    }
-
-    for (size_t i = 0; i < dictionary.size; ++i)
-    {
-        find[0] = tolower(find[0]);
-        // If the first element is found, print the morse code representation.
-        if (find[0] == dictionary.symbol[i])
+        int valid = 1;
+        // Check if input is NULL.
+        if (find == NULL || find[0] == '\0')
         {
-            printf("The Morse code representation of %c is: %s\n", find[0], dictionary.morse[i]);
-            break;
+            printf("ERROR: No input was given, please try again.\n");
+            valid = 0;
+        }
+        // Search() only checks for 1 letter, this checks if that is the case.
+        else if (strlen(find) != 1)
+        {
+            printf("ERROR: Enter ONE letter or number!\n");
+            valid = 0;
+        }
+
+        else
+        {
+            // Variable to check if symbol is found in dictionary.
+            int found = 0;
+
+            // Check if user input is a symbol in dictionary.symbol
+            for (size_t i = 0; i < dictionary.size; ++i)
+            {
+                if (tolower(find[0]) == dictionary.symbol[i])
+                {
+                    found = 1;
+                    break;
+                }
+            }
+
+            if (found == 0)
+            {
+                printf("ERROR: Invalid input! Enter a letter or number. \n");
+                valid = 0;
+            }
+
+            // Print morse code if valid.
+            if (valid)
+            {
+
+                for (size_t i = 0; i < dictionary.size; ++i)
+                {
+
+                    // If the first element is found, print the morse code representation.
+                    if (tolower(find[0]) == dictionary.symbol[i])
+                    {
+                        printf("The Morse code representation of %c is: %s\n", find[0], dictionary.morse[i]);
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Request new input if error is found:
+        printf("\nEnter one letter or number:\n");
+        fgets(find, ISIZE, stdin);
+        if (input_checker(find, ISIZE) == 0)
+        {
+            continue;
         }
         else
         {
-            printf("ERROR: Please enter a valid symbol (Letters or numbers).\n");
-            fgets(find, ISIZE, stdin);
             find[strcspn(find, "\n")] = '\0';
-            search(find, dictionary);
-            break;
         }
     }
 }
@@ -307,7 +395,14 @@ int exit_program(char user_char[])
 
             printf("ERROR: Please enter Y or N! \n");
             fgets(user_char, ISIZE, stdin);
-            user_char[strcspn(user_char, "\n")] = '\0';
+            if (input_checker(user_char, ISIZE) == 0)
+            {
+                continue;
+            }
+            else
+            {
+                user_char[strcspn(user_char, "\n")] = '\0';
+            }
         }
     }
 }
