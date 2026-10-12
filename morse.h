@@ -22,6 +22,7 @@ typedef struct coder_decoder
 
 
 // Function declarations
+void help(void);
 void code(char encrypt[], dict dictionary);
 void decode(char decrypt[], dict dictionary);
 void search(char find[], dict dictionary);

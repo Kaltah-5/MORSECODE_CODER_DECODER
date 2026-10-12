@@ -7,7 +7,23 @@
 #define CSIZE 10   // Command size.
 #define ISIZE 1000 // Input size.
 
-// Handle long user inputs
+// Command help: Display valid commands.
+
+void help(void)
+{
+
+    printf("\nCOMMAND LIST:\n");
+    printf("-------------------------------------------------------\n");
+    printf("help - shows the list of commands and what they do.\n");
+    printf("code - code the input text in Morse code\n");
+    printf("decode - decode the entered Morse code.\n");
+    printf("search - shows Morse code for the specified symbol\n");
+    printf("show - Shows a table with Morse code\n");
+    printf("exit - exit the program\n");
+    printf("-------------------------------------------------------\n");
+}
+
+// Check if user input is too long, clears input buffer.
 int input_checker(char input[], int size)
 {
 
@@ -368,12 +384,12 @@ void show(dict dictionary)
     }
 }
 
+// Exit function: Makes user confirm exit.
 int exit_program(char user_char[])
 {
 
     while (1)
     {
-
 
         if (user_char == NULL || user_char[0] == '\0')
         {

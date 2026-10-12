@@ -4,11 +4,12 @@
 #include "morse.h"
 #define CSIZE 10   // Command size.
 #define ISIZE 1000 // Input size.
-
+#define DICT_SIZE 36 // Size of dictionary.
+ 
 // Initilize the morsecode from a-z then 0-9 in that order.
 dict dictionary = {
     .dictionary_id = 1,
-    .size = 36,
+    .size = DICT_SIZE,
 
     // Array of pointers:
     .morse = {
@@ -29,12 +30,12 @@ int main(void)
     char user_input[ISIZE] = "";
 
     // Loop to fill up the array from a-z then 0-9 in that order.
-    for (int i = 0; i < 36; i++)
+    for (int i = 0; i < DICT_SIZE; i++)
     {
 
-        if (i >= 26)
+        if (i >= (DICT_SIZE - 10))
         {
-            dictionary.symbol[i] = '0' + (i - 26);
+            dictionary.symbol[i] = '0' + (i - (DICT_SIZE - 10));
         }
         else
         {
@@ -78,15 +79,7 @@ int main(void)
         // Command: Help:
         if (strcmp(user_command, "help") == 0 || strcmp(user_command, "Help") == 0)
         {
-            printf("\nCOMMAND LIST:\n");
-            printf("-------------------------------------------------------\n");
-            printf("help - shows the list of commands and what they do.\n");
-            printf("code - code the input text in Morse code\n");
-            printf("decode - decode the entered Morse code.\n");
-            printf("search - shows Morse code for the specified symbol\n");
-            printf("show - Shows a table with Morse code\n");
-            printf("exit - exit the program\n");
-            printf("-------------------------------------------------------\n");
+            help();
         }
 
         // Command: Code.
