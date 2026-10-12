@@ -6,7 +6,6 @@
 #include <ctype.h>
 #define CSIZE 10   // Command size.
 #define ISIZE 1000 // Input size.
-#define SSIZE 3    // Single char size.
 
 // Code function: code letters and numbers to their morse codes representation.
 void code(char encrypt[], dict dictionary)
@@ -100,6 +99,7 @@ void decode(char decrypt[], dict dictionary)
 {
     while (1)
     {
+        int valid = 0;
         // Check if input is NULL.
         if (decrypt == NULL || decrypt[0] == '\0')
         {
@@ -109,7 +109,7 @@ void decode(char decrypt[], dict dictionary)
         else
         {
             // Assume the input was valid.
-            int valid = 1;
+            valid = 1;
 
             // Run through the user input:
             for (size_t i = 0; i < strlen(decrypt); ++i)
@@ -123,66 +123,80 @@ void decode(char decrypt[], dict dictionary)
                 }
             }
 
+            // A check so that input doesnt end with space.
+            if(strlen(decrypt) > 0 && decrypt[strlen(decrypt) - 1] == ' '){
+                printf("ERROR: Morse code can't end with a space!");
+                valid = 0;
+            }
             if (valid)
             {
 
                 // Create a temporary array to store one morse code at a time.
                 // needed, because otherwise user input cant be compared with dictionary.morse[].
-                // User input array of char
-                // dictionary.morse is an array of pointers
-                char morse[10];
+                // User input array of char.
+                // dictionary.morse is an array of pointers.
+                // Size is 6, because longest morse code is 5 dashes, for 0.
+                char morse[6];
 
-                // Keeps track of next pos in morse[] array.
+                // Keeps track of element in morse[] array.
                 size_t k = 0;
 
                 for (size_t i = 0; i < strlen(decrypt); ++i)
                 {
 
                     // IF no space is found, save the morse code in the morse[] array
-                    if (decrypt[i] != ' ' && decrypt[i] != '\0')
+                    if (decrypt[i] == '.' || decrypt[i] == '-')
                     {
-                        morse[k] = decrypt[i];
-                        ++k;
                         if (k >= sizeof(morse) - 1)
                         {
                             valid = 0;
                             printf("ERROR: Invalid morse code length!");
                             break;
                         }
+                        morse[k] = decrypt[i];
+                        ++k;
                     }
+
                     else
                     {
-                        // Set last element to \0.
-                        morse[k] = '\0';
-
                         // Variable to check if the morse code is found in dictionary.
                         int found = 0;
-                        for (size_t j = 0; j < dictionary.size; ++j)
-                        {
 
-                            if (strcmp(morse, dictionary.morse[j]) == 0)
+                        if (k > 0)
+                        {
+                            // Set last element to \0.
+                            morse[k] = '\0';
+
+                            for (size_t j = 0; j < dictionary.size; ++j)
                             {
-                                found = 1;
-                                printf("%c", dictionary.symbol[j]);
+
+                                if (strcmp(morse, dictionary.morse[j]) == 0)
+                                {
+                                    found = 1;
+                                    printf("%c", dictionary.symbol[j]);
+                                    break;
+                                }
+                            }
+                            if (found == 0)
+                            {
+                                valid = 0;
+                                printf("ERROR: Morse code not found in the dictionary.");
                                 break;
                             }
                         }
 
-                        if (found == 0)
-                        {
-                            valid = 0;
-                            printf("ERROR: Morse code not found in the dictionary.");
-                            break;
-                        }
-                        else if (decrypt[i + 1] == ' ')
-                        {
-                            printf(" ");
-                            i++;
-                        }
-
+                        // Reset the counter for morse[].
                         k = 0;
                     }
+                    // A check for double space, print space when another word is detected.
+                    if (decrypt[i] == ' ' && decrypt[i + 1] == ' ')
+                    {
+                        printf(" ");
+                        ++i;
+                    }
                 }
+
+                // This checks the last word since it doesnt end in space.
                 if (k > 0)
                 {
                     // Set last element to \0.
@@ -199,28 +213,26 @@ void decode(char decrypt[], dict dictionary)
                             printf("%c", dictionary.symbol[j]);
                             break;
                         }
-                        if (found == 0)
-                        {
-                            valid = 0;
-                            printf("ERROR: Morse code not found in the dictionary.");
-                            break;
-                        }
+                    }
+                    if (found == 0)
+                    {
+                        valid = 0;
+                        printf("ERROR: Morse code not found in the dictionary.");
+                        break;
                     }
                 }
             }
 
             if (valid)
             {
+                printf("\n");
                 return;
             }
-            else
-            {
-                // If the if statement above is skipped, we ask the user to write something again.
-                printf("\nEnter what you want to decode (You can only code letters and numbers):\n");
-                fgets(decrypt, ISIZE, stdin);
-                decrypt[strcspn(decrypt, "\n")] = '\0';
-            }
         }
+        // Request new input when an error is found.
+        printf("\nEnter the morse code you to decode (You can only code letters and numbers):\n");
+        fgets(decrypt, ISIZE, stdin);
+        decrypt[strcspn(decrypt, "\n")] = '\0';
     }
 }
 
@@ -247,7 +259,7 @@ void search(char find[], dict dictionary)
         else
         {
             printf("ERROR: Please enter a valid symbol (Letters or numbers).\n");
-            fgets(find, SSIZE, stdin);
+            fgets(find, ISIZE, stdin);
             find[strcspn(find, "\n")] = '\0';
             search(find, dictionary);
             break;
@@ -255,6 +267,7 @@ void search(char find[], dict dictionary)
     }
 }
 
+// Show function: displays all letters and numbers and gives their morse code representation.
 void show(dict dictionary)
 {
 
@@ -264,5 +277,37 @@ void show(dict dictionary)
     for (int i = 0; i < dictionary.size; ++i)
     {
         printf("%c: %s \n", dictionary.symbol[i], dictionary.morse[i]);
+    }
+}
+
+int exit_program(char user_char[])
+{
+    if (user_char == NULL || user_char[0] == '\0')
+    {
+        printf("ERROR: No input was given, please try again.\n");
+        return 0;
+    }
+
+    while (1)
+    {
+        if (strcmp(user_char, "y") == 0 || strcmp(user_char, "Y") == 0)
+        {
+            printf("Goodbye!");
+            return 1;
+        }
+        else if (strcmp(user_char, "n") == 0 || strcmp(user_char, "N") == 0)
+        {
+            printf("Program will keep running!\n");
+            return 0;
+
+            // Keep the program running, go back to the beginning of the while loop.
+        }
+        else
+        {
+
+            printf("ERROR: Please enter Y or N! \n");
+            fgets(user_char, ISIZE, stdin);
+            user_char[strcspn(user_char, "\n")] = '\0';
+        }
     }
 }

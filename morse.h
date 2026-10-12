@@ -26,6 +26,7 @@ void code(char encrypt[], dict dictionary);
 void decode(char decrypt[], dict dictionary);
 void search(char find[], dict dictionary);
 void show(dict dictionary);
+int exit_program(char user_char[]);
 
 #endif
 
