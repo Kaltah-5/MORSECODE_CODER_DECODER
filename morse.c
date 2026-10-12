@@ -42,6 +42,7 @@ void code(char encrypt[], dict dictionary)
     // Keep asking for input until the user enters valid text.
     while (1)
     {
+        printf("=======================================================\n");
         // Check if input is NULL or empty.
         if (encrypt == NULL || encrypt[0] == '\0')
         {
@@ -85,7 +86,6 @@ void code(char encrypt[], dict dictionary)
             }
 
             // If valid == 1, this check is done, and the we exit this function.
-            // If valid != 1, this is skipped, and we loop through the while loop.
             if (valid)
             {
                 printf("The morse code representation of \"%s\" is:\n", encrypt);
@@ -135,6 +135,7 @@ void decode(char decrypt[], dict dictionary)
 {
     while (1)
     {
+        printf("=======================================================\n");
         int valid = 0;
         // Check if input is NULL.
         if (decrypt == NULL || decrypt[0] == '\0')
@@ -218,7 +219,6 @@ void decode(char decrypt[], dict dictionary)
                             {
                                 valid = 0;
                                 printf("ERROR: Morse code not found in the dictionary.");
-                                break;
                             }
                         }
 
@@ -255,7 +255,6 @@ void decode(char decrypt[], dict dictionary)
                     {
                         valid = 0;
                         printf("ERROR: Morse code not found in the dictionary.");
-                        break;
                     }
                 }
             }
@@ -289,6 +288,7 @@ void search(char find[], dict dictionary)
 
     while (1)
     {
+        printf("=======================================================\n");
         int valid = 1;
         // Check if input is NULL.
         if (find == NULL || find[0] == '\0')
@@ -370,15 +370,17 @@ void show(dict dictionary)
 
 int exit_program(char user_char[])
 {
-    if (user_char == NULL || user_char[0] == '\0')
-    {
-        printf("ERROR: No input was given, please try again.\n");
-        return 0;
-    }
 
     while (1)
     {
-        if (strcmp(user_char, "y") == 0 || strcmp(user_char, "Y") == 0)
+        printf("=========================================\n");
+
+        if (user_char == NULL || user_char[0] == '\0')
+        {
+            printf("ERROR: No input was given, please try again.\n");
+            return 0;
+        }
+        else if (strcmp(user_char, "y") == 0 || strcmp(user_char, "Y") == 0)
         {
             printf("Goodbye!");
             return 1;
@@ -386,6 +388,7 @@ int exit_program(char user_char[])
         else if (strcmp(user_char, "n") == 0 || strcmp(user_char, "N") == 0)
         {
             printf("Program will keep running!\n");
+            printf("=======================================================\n");
             return 0;
 
             // Keep the program running, go back to the beginning of the while loop.
