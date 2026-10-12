@@ -14,11 +14,12 @@ typedef struct Dictionary
 } dict;
 
 // Coder-decoder structure
-struct coder_decoder
+typedef struct coder_decoder
 {
     dict Dictionary;
     int current_dictionary_id;
-};
+} coder;
+
 
 // Function declarations
 void code(char encrypt[], dict dictionary);

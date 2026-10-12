@@ -6,6 +6,22 @@
 #define ISIZE 1000 // Input size.
 #define SSIZE 3    // Single char size.
 
+// Initilize the morsecode from a-z then 0-9 in that order.
+dict dictionary = {
+    .dictionary_id = 1,
+    .size = 36,
+
+    // Array of pointers:
+    .morse = {
+        ".-", "-...", "-.-.", "-..", ".",
+        "..-.", "--.", "....", "..", ".---",
+        "-.-", ".-..", "--", "-.", "---",
+        ".--.", "--.-", ".-.", "...", "-",
+        "..-", "...-", ".--", "-..-", "-.--",
+        "--..", "-----", ".----", "..---",
+        "...--", "....-", ".....", "-....",
+        "--...", "---..", "----."}};
+
 int exit_program(char user_char[])
 {
     if (user_char[0] == '\0')
@@ -40,21 +56,6 @@ int exit_program(char user_char[])
 
 int main(void)
 {
-    // Initilize the morsecode from a-z then 0-9 in that order.
-    dict dictionary = {
-        .dictionary_id = 1,
-        .size = 36,
-
-        // Array of pointers:
-        .morse = {
-            ".-", "-...", "-.-.", "-..", ".",
-            "..-.", "--.", "....", "..", ".---",
-            "-.-", ".-..", "--", "-.", "---",
-            ".--.", "--.-", ".-.", "...", "-",
-            "..-", "...-", ".--", "-..-", "-.--",
-            "--..", "-----", ".----", "..---",
-            "...--", "....-", ".....", "-....",
-            "--...", "---..", "----."}};
 
     // Store user input.
     char user_command[CSIZE] = "";
@@ -75,6 +76,10 @@ int main(void)
             dictionary.symbol[i] = 'a' + i;
         }
     }
+
+    coder my_coder = {
+        .Dictionary = dictionary,
+        .current_dictionary_id = 1};
 
     // Menu at start.
     printf("=====================================================\n");
@@ -135,6 +140,8 @@ int main(void)
 
             user_input[strcspn(user_input, "\n")] = '\0';
             decode(user_input, dictionary);
+            printf("=======================================================\n");
+            printf("\n\n");
         }
 
         // Command: Search.
@@ -164,6 +171,10 @@ int main(void)
         else if (strcmp(user_command, "show") == 0 || strcmp(user_command, "Show") == 0)
         {
             show(dictionary);
+        }
+        else
+        {
+            printf("ERROR: Invalid command. \n");
         }
     }
 
